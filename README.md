@@ -37,6 +37,14 @@ all stops that connect two or more subway routes.
 In `main.py`, `travel_between_stops(stop_1, stop_2)`, will retrieve and print
 the names of the subway routes, in order, that connect the given stops.
 
+### Testing
+
+There are some unit tests in `test_mbta_api.py` that can be run via 
+`pytest test_mbta_api.py` to verify the functionality of some of the helper 
+and analysis functions.
+
 ## Resources
 - [MBTA API Documentation](https://api-v3.mbta.com/docs/swagger/index.html)
 - [Requests Documentation](https://requests.readthedocs.io/en/latest/)
+- [Pandas Documentation](https://pandas.pydata.org/docs/)
+- [Pytest Documentation](https://docs.pytest.org/en/stable/)
