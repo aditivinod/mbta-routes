@@ -17,7 +17,8 @@ stops_routes_json = mbta_requests.pair_stops_and_routes(routes_json)
 save_json(stops_routes_json, "stops_routes.json")
 stops_routes = json_to_dataframe("stops_routes.json")
 
-mbta_results = MBTA_Analysis(routes, stops_routes)
+mbta_analysis = MBTA_Analysis(routes, stops_routes)
+mbta_results = MBTA_Results(mbta_analysis)
 
 
 # Q1: Get all subway routes
@@ -26,12 +27,14 @@ def subway_routes():
 
 # Q2: Get stop information for subway routes
 
+
 def subway_stops_information():
     mbta_results.print_max_stops()
     mbta_results.print_min_stops()
     mbta_results.print_connected_stops()
 
 # Q3: Travel between two subway stops
+
 
 def travel_between_stops(stop_1, stop_2):
     mbta_results.print_connected_route(stop_1, stop_2)

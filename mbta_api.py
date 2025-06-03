@@ -63,6 +63,8 @@ class MBTA_Requests:
         """
         response = requests.get(
             f"{self.base_url}{request}", auth=self._auth, timeout=10)
+        if response.status_code != 200:
+            raise Exception(f"Error: {response.status_code}")
         return response
 
     def get_subway_routes(self):
@@ -88,8 +90,8 @@ class MBTA_Requests:
             A response from the MBTA API containing all the stops on the given
                 route.
         """
-        response = requests.get(f"{self.base_url}stops?filter[route]={
-                                route}", auth=self._auth, timeout=10)
+        request = f"stops?filter[route]={route}"
+        response = self.get_request(request)
         return response
 
     def pair_stops_and_routes(self, subway_routes):
@@ -150,12 +152,6 @@ class MBTA_Analysis:
         self.subway_routes = subway_routes  # Lowk worth removing entirely
         self.stops_routes = stops_routes
 
-    def print_subway_route_names(self):
-        """
-        Prints the names of all MBTA subway routes.
-        """
-        print(self.subway_routes['attributes.long_name'].tolist())
-
     def get_max_stops(self):
         """
         Gets the name of the route with the maximum number of stops & the 
@@ -206,30 +202,6 @@ class MBTA_Analysis:
             connected_stops, columns=['Stop', 'Routes'])
 
         return connected_stops_df
-
-    def print_max_stops(self):
-        """
-        Prints the subway route with the maximum number of stops.
-        """
-        route, num_stops = self.get_max_stops()
-        print(f"Max Stops: {route}, Count: {num_stops}.")
-
-    def print_min_stops(self):
-        """
-        Prints the subway route with the minimum number of stops.
-        """
-        route, num_stops = self.get_min_stops()
-        print(f"Min Stops: {route}, Count: {num_stops}.")
-
-    def print_connected_stops(self):
-        """
-        Prints the stops that are connected between subway routes and their 
-        corresponding routes.
-        """
-        connected_stops = self.get_connected_routes()
-
-        for _, row in connected_stops.iterrows():
-            print(f"Stop: {row['Stop']}, Routes: {', '.join(row['Routes'])}.")
 
     def get_stop_route(self, provided_stop):
         """
@@ -309,11 +281,56 @@ class MBTA_Analysis:
 
         return rail_route
 
+
+class MBTA_Results:
+    """
+    Outputs results in the terminal based on MBTA_Analysis.
+
+
+    Attributes:
+        mbta_analysis: An instance of MBTA_Analysis containing subway routes and
+            stops.
+    """
+
+    def __init__(self, mbta_analysis):
+        self.mbta_analysis = mbta_analysis
+
+    def print_subway_route_names(self):
+        """
+        Prints the names of all MBTA subway routes.
+        """
+        print(
+            self.mbta_analysis.subway_routes['attributes.long_name'].tolist())
+
+    def print_max_stops(self):
+        """
+        Prints the subway route with the maximum number of stops.
+        """
+        route, num_stops = self.mbta_analysis.get_max_stops()
+        print(f"Max Stops: {route}, Count: {num_stops}.")
+
+    def print_min_stops(self):
+        """
+        Prints the subway route with the minimum number of stops.
+        """
+        route, num_stops = self.mbta_analysis.get_min_stops()
+        print(f"Min Stops: {route}, Count: {num_stops}.")
+
+    def print_connected_stops(self):
+        """
+        Prints the stops that are connected between subway routes and their 
+        corresponding routes.
+        """
+        connected_stops = self.mbta_analysis.get_connected_routes()
+
+        for _, row in connected_stops.iterrows():
+            print(f"Stop: {row['Stop']}, Routes: {', '.join(row['Routes'])}.")
+
     def print_connected_route(self, stop_1, stop_2):
         """
         Prints the route that connects two subway stops.
         """
-        rail_route = self.connect_route(stop_1, stop_2)
+        rail_route = self.mbta_analysis.connect_route(stop_1, stop_2)
 
         if rail_route:
             print(f" {stop_1} to {stop_2} → {', '.join(rail_route)}")
