@@ -5,12 +5,33 @@ import api_info
 username = api_info.USERNAME
 api_key = api_info.MBTA_KEY
 
-mbta_api = MBTA_API(api_key, username)
-mbta_results = MBTA_Results(subway_routes="subway_routes.json")
+
+# Setup
+mbta_requests = MBTA_Requests(api_key, username)
+
+routes_json = mbta_requests.get_subway_routes()
+save_json(routes_json, "subway_routes.json")
+routes = json_to_dataframe("subway_routes.json")
+
+stops_routes_json = mbta_requests.pair_stops_and_routes(routes_json)
+save_json(stops_routes_json, "stops_routes.json")
+stops_routes = json_to_dataframe("stops_routes.json")
+
+mbta_results = MBTA_Results(routes, stops_routes)
+
 
 # Q1: Get all subway routes
-subway_routes = mbta_api.response_to_json(mbta_api.get_subway_routes())
-mbta_results.print_subway_route_names()
+def subway_routes():
+    mbta_results.print_subway_route_names()
 
+# Q2: Get stop information for subway routes
+def subway_stops_information():
+    mbta_results.print_max_stops()
+    mbta_results.print_min_stops()
+    mbta_results.print_connected_stops()
+    
+def main():
+    subway_routes()
+    subway_stops_information()
 
-
+main()
