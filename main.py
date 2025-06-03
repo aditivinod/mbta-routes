@@ -22,6 +22,13 @@ mbta_results = MBTA_Results(mbta_analysis)
 
 
 # Q1: Get all subway routes
+
+# Subway routes are filtered & then saved locally to a JSON file for further
+# reference as opposed to saving all route data from the API. Subway routes
+# do not change often, so this helps reduce the computational load in terms of
+# both time and space in comparison to saving all of the routes, especially as
+# the non-subway routes are unnecessary for this analysis.
+
 def subway_routes():
     mbta_results.print_subway_route_names()
 
